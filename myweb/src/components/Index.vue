@@ -39,8 +39,8 @@ export default {
       method:"POST",
       url:'/api/list',
       data:{
-        phone: 17633559839,
-        password: 477150
+        phone: '176****9839',
+        password: '477150'
       }
     }).then((res)=>{
       this.data = res.data;
