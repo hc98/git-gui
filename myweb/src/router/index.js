@@ -2,6 +2,7 @@ import Vue from 'vue'
 import Router from 'vue-router'
 import Login from '@/components/home/login'
 import Index from '@/components/Index'
+import Person from '@/components/person'
 
 Vue.use(Router)
 
@@ -15,6 +16,11 @@ const router = new Router({
       path: '/login',
       name: 'Login',
       component: Login
+    },
+    {
+      path: '/person',
+      name: 'Person',
+      component: Person
     },
     {
       path: '/index',

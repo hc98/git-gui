@@ -15,11 +15,22 @@ export default {
   margin: 0;
   padding: 0
 }
-button, input{
+ul li{
+  list-style: none;
+}
+a{
+  text-decoration: none;
+  color: #000;
+}
+button, input, textarea{
   outline: none;
   border: 0;
-  border-radius: 5px;
+  border-radius: 3px;
   font-size: 15px;
+}
+textarea{
+    vertical-align: top;
+    resize: none;
 }
 img{
   border: 0;

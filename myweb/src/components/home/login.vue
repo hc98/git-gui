@@ -38,10 +38,10 @@
         cursor: pointer;
         font-size: 18px;
         &.active{
-          background-color: #00bcd3;
+          background-color: #00bbee;
           color: #fff;
           &:active{
-            // 按钮按下的效果
+            background-color: #0099cc;
           }
         }
       }
@@ -93,10 +93,8 @@
             password: that.password
           }
         }).then((res)=>{
-          window.sessionStorage.setItem('isLogin', false);
           if (res.data.code==200) {
             window.sessionStorage.setItem('account', that.account);
-            window.sessionStorage.setItem('isLogin', true);
             this.$router.push('index');
           }
         });
