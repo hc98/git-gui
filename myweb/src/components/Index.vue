@@ -1,6 +1,6 @@
 <template>
   <div class="index">
-    <h1 @click='getServer'>{{ msg }}</h1>
+    <h1 @click='getServer'><router-link to="/login">{{ msg }}</router-link></h1>
     <table>
       <tr>
         <th>ID</th>
@@ -58,6 +58,7 @@ export default {
 <style scoped>
 h1, h2 {
   font-weight: normal;
+  text-align: center;
 }
 table{
   border: 1px solid #000;

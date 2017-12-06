@@ -15,8 +15,23 @@ export default {
   margin: 0;
   padding: 0
 }
+button, input{
+  outline: none;
+  border: 0;
+  border-radius: 5px;
+  font-size: 15px;
+}
+img{
+  border: 0;
+  font-size: 0;
+  border: 0;
+}
 #app {
+  width: 100%;
+  height: 100%;
   font-family: 'Avenir', Helvetica, Arial, sans-serif;
-  color: #2c3e50;
+  font-size: 16px;
+  color: #000;
+  background: #fff;
 }
 </style>
