@@ -50,7 +50,7 @@
       user-select: none;
       cursor: pointer;
       &:active{
-        background-color: #0099cc
+        background-color: #0099cc;
       }
     }
   }
@@ -87,10 +87,11 @@
     },
     created() {
       this.obj = JSON.parse(window.sessionStorage.getItem('person'));
-      console.log(this.obj);
+      this.obj.birth = this.obj.birth.slice(0,10);
     },
     methods: {
       submit () {
+        console.log(this.obj.birth);
         const that = this;
         this.$axios({
           method:"POST",

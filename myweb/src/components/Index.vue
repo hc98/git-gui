@@ -137,6 +137,7 @@ export default {
         phone: acc
       }
     }).then((res)=>{
+      console.log(res.data);
       this.user = res.data.pop();
       this.data = res.data;
       window.sessionStorage.setItem('person', JSON.stringify(this.user))
