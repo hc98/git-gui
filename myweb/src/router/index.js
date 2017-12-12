@@ -20,30 +20,27 @@ const router = new Router({
     {
       path: '/person',
       name: 'Person',
-      component: Person
+      component: Person,
+      meta: {
+        flag: true
+      }
     },
     {
       path: '/index',
       name: 'Index',
-      component: Index
+      component: Index,
+      meta: {
+        flag: true
+      }
     }
   ]
 })
+
+// 路由验证，判断是否需要验证以及验证是否成功
 // router.beforeEach((to, from, next) => {
-//   let isLogin = window.sessionStorage.getItem('isLogin');
+//     // 判断是否需要验证
+//   if (to.meta.flag) {
 //
-//   isLogin = (isLogin==null)?false:isLogin;
-//   console.log(isLogin);
-//   // 未登录状态；跳转至login
-//   if (!isLogin) {
-//     router.push('/login');
-//     return;
-//   }
-//   // 已登录状态；当路由到login时，跳转至home
-//   if (to.name === 'Login') {
-//     if (isLogin) {
-//       router.push('/index');
-//     }
 //   }
 //   next();
 // })
