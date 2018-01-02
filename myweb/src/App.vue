@@ -13,7 +13,8 @@ export default {
 <style>
 *{
   margin: 0;
-  padding: 0
+  padding: 0;
+  user-select: none;
 }
 ul li{
   list-style: none;
@@ -36,6 +37,9 @@ img{
   border: 0;
   font-size: 0;
   border: 0;
+}
+i{
+  font-style: normal;
 }
 #app {
   width: 100%;

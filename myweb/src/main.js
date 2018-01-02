@@ -9,10 +9,15 @@ Vue.config.productionTip = false
 Vue.prototype.$axios= axios
 // Vue.prototype.HOST = '/getErr'
 
+const bus = new Vue()
+
 /* eslint-disable no-new */
 new Vue({
   el: '#app',
   router,
+  data: {
+    bus
+  },
   template: '<App/>',
   components: { App }
 })

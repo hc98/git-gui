@@ -21,7 +21,6 @@ router.post('/register', (req, res, next)=>{
 // 登录模块 login 以HmacSHA1方法加密
 router.post('/login', (req, res, next)=>{
   const hash = HmacSHA1(req.body.password, key).toString();
-  console.log(hash);
   pool.getConnection((err, connection) => {
     const sqlLogin = 'SELECT id, password FROM USER WHERE phone="'+req.body.phone+'";';
     connection.query(sqlLogin, (error, results, fields) => {
@@ -57,7 +56,6 @@ router.post('/login', (req, res, next)=>{
         })
       } else {
         // 对比失败
-        console.log('密码错误');
         res.send(290, 'password error');
         res.end();
       }
@@ -67,7 +65,6 @@ router.post('/login', (req, res, next)=>{
 
 // 退出模块 exit
 router.post('/exit', (req, res, next) => {
-  console.log(req.body);
   pool.getConnection((error, connection) => {
     const sqlStatus = 'update status set status="0" where id="'+req.body.id+'"';
     connection.query(sqlStatus, (err, data, fields)=>{
@@ -87,7 +84,6 @@ router.post('/exit', (req, res, next) => {
 router.post('/update', (req, res, next) => {
   const data = req.body.person;
   const sqlUpdate = 'update user set name="'+data.name+'", nick="'+data.nick+'", sex="'+data.sex+'", phone="'+data.phone+'",birth="'+data.birth+'", address="'+data.address+'",remark="'+data.remark+'" where id="'+data.id+'"';
-  console.log(sqlUpdate);
   pool.getConnection((err, connection) => {
     connection.query(sqlUpdate, (err, data, fields)=>{
       connection.release();
@@ -97,6 +93,38 @@ router.post('/update', (req, res, next) => {
     })
   })
 });
+
+// 删除数据 del
+router.post('/del', (req, res, next) => {
+  const obj = req.body;
+  let sql = 'DELETE FROM USER WHERE id in (' + obj.ids.join() + ');';
+  pool.getConnection((err, connection) => {
+    connection.query(sql, (err, data, fields) => {
+      if (err) throw err;
+      res.send(200, {
+        code: 200,
+        msg: "删除成功"
+      })
+      res.end();
+    })
+  })
+})
+
+// 添加数据 add
+router.post('/add', (req, res, next) => {
+  const obj = req.body;
+  let sql = 'INSERT INTO user (name, nick, sex, phone, address, birth, remark) VALUES("'+obj.name+'", "'+obj.nick+'", "'+obj.sex+'", "'+obj.phone+'", "'+obj.address+'", "'+obj.birth+'", "'+obj.remark+'");';
+  pool.getConnection((err, connection) => {
+    connection.query(sql, (err, data, fields) => {
+      if (err) throw err;
+      res.send(200, {
+        code: 200,
+        msg: "添加成功"
+      })
+      res.end();
+    })
+  })
+})
 
 // 数据列表 list
 router.post('/list', (req, res, next) => {

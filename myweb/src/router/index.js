@@ -3,6 +3,7 @@ import Router from 'vue-router'
 import Login from '@/components/home/login'
 import Index from '@/components/Index'
 import Person from '@/components/person'
+import Win from '@/components/win'
 
 Vue.use(Router)
 
@@ -32,7 +33,12 @@ const router = new Router({
       meta: {
         flag: true
       }
-    }
+    },
+    {
+      path: '/win',
+      name: 'Win',
+      component: Win
+    },
   ]
 })
 
