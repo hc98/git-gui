@@ -1,4 +1,5 @@
 #!/usr/bin/env node
+// 集群已启用
 
 /**
  * Module dependencies.
@@ -7,6 +8,8 @@
 var app = require('../app');
 var debug = require('debug')('server:server');
 var http = require('http');
+var cluster = require('cluster');
+var numCPUs = require('os').cpus().length;
 
 /**
  * Get port from environment and store in Express.
@@ -23,11 +26,25 @@ var server = http.createServer(app);
 
 /**
  * Listen on provided port, on all network interfaces.
+ * cluster 集群
  */
 
-server.listen(port);
-server.on('error', onError);
-server.on('listening', onListening);
+if (cluster.isMaster) {
+  // console.log('[master] ' + "start master...");
+
+  for (var i = 0; i < numCPUs+4; i++) {
+    cluster.fork();
+  }
+  cluster.on('listening', function (worker, address) {
+    // console.log('[master] ' + 'listening: worker' + worker.id + ',pid:' + worker.process.pid + ', Address:' + address.address + ":" + address.port);
+  });
+} else if (cluster.isWorker) {
+  // console.log('[worker] ' + "start worker ..." + cluster.worker.id);
+
+  server.listen(port);
+  server.on('error', onError);
+  server.on('listening', onListening);
+}
 
 /**
  * Normalize a port into a number, string, or false.
