@@ -3,6 +3,41 @@ const router = express.Router();
 const pool = require('../public/mysql');
 const HmacSHA1 = require('crypto-js/hmac-sha1');
 const key = require('./key');
+var fs = require('fs');
+var multer = require('multer');
+
+// 文件上传
+var app = express();
+var storge = multer.diskStorage({
+  destination: (req, file, callback)=>{
+    callback(null, 'uploads');
+  },
+  filename: (req, file, callback)=>{
+    var fileFormat = (file.originalname).split('.');
+    callback(null, file.fieldname+'_'+Date.now()+'.'+fileFormat[fileFormat.length-1]);
+  } 
+})
+app.use(express.static('./static'));
+var upload = multer({storage: storge});
+
+router.post('/update', (req, res, next)=>{
+  console.log(process.pid);
+  const file = req.body;
+  console.log(req.file)
+  let buf = new buffer(1024);
+  fs.readFile(file, (err, data)=>{
+    if (err) throw err;
+    console.log(data)
+    res.send(200)
+    res.end();
+  })
+})
+
+router.post('/fileUp', upload.array('upFiles', 20), (req, res, next)=>{
+  console.log(req.files)
+  res.sendStatus(200)
+  res.end()
+})
 
 // 注册模块 register 暂时不提供注册服务
 router.post('/register', (req, res, next)=>{

@@ -138,6 +138,15 @@
         <td>{{item.remark}}</td>
       </tr>
     </table>
+    <div class="box">
+      <input type="file" @change="update">
+    </div>
+    <div class="file">
+      <form action="/api/fileUp" method="post" enctype="multipart/form-data">
+        <input type="file" name="upFiles" id="">
+        <input type="submit" value="文件提交">
+      </form>
+    </div>
   <Win :showMessage="show" v-show="show" />
   </div>
 </template>
@@ -175,8 +184,19 @@ export default {
     });
   },
   methods: {
-    list(that) {
-      
+    update(e) {
+      let fs = e.target.files[0];
+      console.log('--------------------');
+      console.log(fs);
+      console.log('--------------------');
+      this.$axios({
+        method: 'post',
+        url: '/api/update',
+        headers: {'name': fs.name},
+        data: fs
+      }).then(res=>{
+        // console.log(res.data)
+      })
     },
     logout() {
       const that = this;

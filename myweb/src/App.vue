@@ -1,12 +1,21 @@
 <template>
   <div id="app">
-    <router-view/>
+    <transition :name="transition">
+      <router-view/>
+    </transition>
   </div>
 </template>
 
 <script>
 export default {
-  name: 'app'
+  name: 'app',
+  watch: {
+    '$route' (to, from) {
+      const toNum = to.path.split('/').length
+      const fromNum = from.path.split('/').length
+      this.transition = (toNum < fromNum)?'slide-fade' : 'slide-fade'
+    }
+  }
 }
 </script>
 
@@ -48,5 +57,13 @@ i{
   font-size: 16px;
   color: #000;
   background: #fff;
+}
+
+/* 全局路由跳转动画 */
+.slide-fade-enter-active {
+  transition: all .9s ease;
+}
+.slide-fade-enter, .slide-fade-leave-to {
+  opacity: 0;
 }
 </style>
