@@ -142,8 +142,8 @@
       <input type="file" @change="update">
     </div>
     <div class="file">
-      <form action="/api/fileUp" method="post" enctype="multipart/form-data">
-        <input type="file" name="upFiles" id="">
+      <form action="/api/update" method="post" enctype="multipart/form-data">
+        <input type="file" name="uploadFiles" id="">
         <input type="submit" value="文件提交">
       </form>
     </div>

@@ -3,34 +3,28 @@ const router = express.Router();
 const pool = require('../public/mysql');
 const HmacSHA1 = require('crypto-js/hmac-sha1');
 const key = require('./key');
-var fs = require('fs');
-var multer = require('multer');
+const fs = require('fs');
+const multer = require('multer');
 
 // 文件上传
-var app = express();
-var storge = multer.diskStorage({
+const app = express();
+let storge = multer.diskStorage({
   destination: (req, file, callback)=>{
     callback(null, 'uploads');
   },
   filename: (req, file, callback)=>{
     var fileFormat = (file.originalname).split('.');
-    callback(null, file.fieldname+'_'+Date.now()+'.'+fileFormat[fileFormat.length-1]);
-  } 
+    callback(null, file.fieldname + '_' + Date.now() + '.' + fileFormat[fileFormat.length-1]);
+  }
 })
 app.use(express.static('./static'));
-var upload = multer({storage: storge});
+let upload = multer({storage: storge});
 
 router.post('/update', (req, res, next)=>{
   console.log(process.pid);
-  const file = req.body;
-  console.log(req.file)
-  let buf = new buffer(1024);
-  fs.readFile(file, (err, data)=>{
-    if (err) throw err;
-    console.log(data)
-    res.send(200)
-    res.end();
-  })
+  console.log(req.body)
+  console.log(req.files);
+  console.log(req.file);
 })
 
 router.post('/fileUp', upload.array('upFiles', 20), (req, res, next)=>{

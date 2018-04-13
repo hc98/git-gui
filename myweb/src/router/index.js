@@ -4,6 +4,7 @@ import Login from '@/components/home/login'
 import Index from '@/components/Index'
 import Person from '@/components/person'
 import Win from '@/components/win'
+import Shuffle from '@/components/shuffle';
 
 Vue.use(Router)
 
@@ -38,6 +39,11 @@ const router = new Router({
       path: '/win',
       name: 'Win',
       component: Win
+    },
+    {
+      path: '/shuffle',
+      name: 'Shuffle',
+      component: Shuffle
     },
   ]
 })
