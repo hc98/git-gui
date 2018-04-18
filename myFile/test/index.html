@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta name="viewport" content="width=device-width,initial-scale=1.0">
+	<title></title>
+	<style type="text/css">
+		*{
+			margin: 0;
+			padding: 0;
+		}
+		div{
+			position: fixed;
+			bottom: 50px;
+			right: 50px;
+			width: 80px;
+			height: 80px;
+			border-radius: 50% 50%;
+			background-color: #999;
+			text-align-last: center;
+			line-height: 80px;
+			font-size: 24px;
+		}
+		i{
+			font-style: normal;
+			position: fixed;
+			bottom: 0;
+			right: 0;
+			display: block;
+			width: 50px;
+			height: 50px;
+			border-radius: 50% 50%;
+			background-color: #f00;
+			text-align-last: center;
+			line-height: 50px;
+			font-size: 20px;
+			/*transform: translate(-200*Math.cos(45),-200*Math.sin(45));*/
+		}
+	</style>
+</head>
+<body>
+	<div>+</div>
+	<i>+</i>
+</body>
+<script type="text/javascript">
+	var i = document.getElementsByTagName('i')[0];
+	// i.style.backgroundColor = '#000';
+	
+	i.style.transform = 'translate(' + -200*Math.cos(45) + 'px,' + -200*Math.sin(45) + 'px)';
+</script>
+</html>

@@ -69,16 +69,20 @@ export default {
         }).then((res) => {
           console.log(res)
           if (res.status === 200) {
-            this.$router.push('/home')
+            console.log(document.cookie)
+            this.$router.push({
+              path: '/home'
+            })
           } else if (res.status === 201) {
-            this.alert(res.body.msg)
+            this.alert(res.data.msg)
           } else if (res.status === 202) {
-            this.alert(res.body.msg)
+            this.alert(res.data.msg)
           } else {
-            this.alert(res.body.msg)
+            this.alert(res.data.msg)
           }
-        }).catch((err) => {
+        }).catch((error) => {
           this.alert('操作失败')
+          console.log(error)
         })
       }
     },
@@ -90,6 +94,7 @@ export default {
       setTimeout(() => {
         that.show = false
       }, 1000)
+      this.updateCode()
     }
   }
 }
