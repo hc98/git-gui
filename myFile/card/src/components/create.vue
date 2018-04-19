@@ -26,7 +26,6 @@ export default {
       items: [],
       obj: {
         userId: '',
-        id: '',
         name: '',
         sex: '',
         phone: '',
@@ -53,15 +52,9 @@ export default {
         console.log(res)
         if (res.status === 200) {
           that.$router.push('/home')
-        } else if (res.status === 201) {
-          that.alert(res.body.msg)
-        } else if (res.status === 202) {
-          that.alert(res.body.msg)
         } else {
-          that.alert(res.body.msg)
         }
       }).catch((error) => {
-        that.alert('操作失败')
         console.log(error)
       })
     },
