@@ -1,14 +1,23 @@
 <template>
   <div class="home">
-    <div class="search"><input autofocus type="text" name="" id=""></div>
-    <ul class="list">
-      <li v-for="(item, index) in items" :key="index"><span>{{item.name}}</span><span>{{item.company}}·{{item.past}}</span></li>
+    <div class="search">
+      <input autofocus type="text" name="" id="">
+    </div>
+    <ul class="list" @click="details">
+      <li v-for="(item, index) in items" :key='index' :data-index="index">
+        <span>{{item.name}}</span>
+        <span>{{item.company}}·{{item.past}}</span>
+      </li>
     </ul>
     <div class="edit">
-      <router-link to="/create"><i>+</i></router-link>
+      <router-link to="/create">
+        <i>+</i>
+      </router-link>
     </div>
     <ul class="sidebar">
-      <li v-for="item in codeArr" :key="item"><a :href="'#'+item">{{item}}</a></li>
+      <li v-for="item in codeArr" :key="item">
+        <a :href="'#'+item">{{item}}</a>
+      </li>
     </ul>
   </div>
 </template>
@@ -53,6 +62,10 @@ export default {
     })
   },
   methods: {
+    details ($event) {
+      console.log($event.target.dataset.index)
+      // this.items
+    },
     list () {
       this.$axios.post('/apis/home', {
         userId: this.userId

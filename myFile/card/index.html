@@ -3,7 +3,15 @@
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width,initial-scale=1.0">
-    <script src="./static/js/rem.js"></script>
+    <!-- <script src="./static/js/rem.js"></script> -->
+    <script src="./static/js/adaptive.js"></script>
+    <script>
+      window['adaptive'].desinWidth = 750;// 设计图宽度
+      window['adaptive'].baseFont = 28;// 没有缩放时的字体大小
+      window['adaptive'].maxWidth = 750;// 页面最大宽度 默认540
+      window['adaptive'].scaleType = 1 // 无论iphone还是安卓手机，都能精确还原1px，做到高度还原视觉稿，如果只是在webview里使用，建议使用，否则请谨慎使用3
+      window['adaptive'].init();// 调用初始化方法
+    </script>
     <title>card</title>
   </head>
   <body>

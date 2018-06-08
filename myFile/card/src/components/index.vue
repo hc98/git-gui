@@ -2,9 +2,12 @@
   <div class="index">
     <a href="">CARD</a>
     <div class="box">
-      <input autofocus type="number" id="phone" oninput="if(value.length>5)value=value.slice(0,11)" v-model="phone" placeholder="请输入手机号">
+      <input autofocus type="number" id="phone" oninput="if(value.length>5)value=value.slice(0,11)" v-model="phone" placeholder="请输入手机号"/>
       <input type="password" id="pwd" maxlength=6 v-model="pwd" placeholder="请输入密码">
-      <p><input type="text" id="yzm" maxlength=4 v-model="yzm" placeholder="请输入验证码"><i @click="updateCode">{{code.slice(0, 4)}}</i></p>
+      <p>
+        <input type="text" id="yzm" maxlength=4 v-model="yzm" placeholder="请输入验证码" @keypress.enter="login"/>
+        <i @click="updateCode">{{code.slice(0, 4)}}</i>
+      </p>
       <button @click="login">登录</button>
     </div>
     <div class="winBox" v-show="show">

@@ -5,7 +5,10 @@
       <b @click="create">保存</b>
     </div>
     <ul class="list">
-      <li v-for="(item, index) in items" :key="index"><span>{{item.name}}</span><span>{{item.company}}·{{item.past}}</span></li>
+      <li v-for="(item, index) in items" :key="index" @click="getIndex(index)">
+        <span>{{item.name}}</span>
+        <span>{{item.company}}·{{item.past}}</span>
+      </li>
     </ul>
   </div>
 </template>
@@ -76,6 +79,9 @@ export default {
         obj[ind[0]] = ind[1]
       })
       return obj
+    },
+    getIndex (i) {
+      console.log(i)
     }
   }
 }

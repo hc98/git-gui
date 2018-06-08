@@ -36,7 +36,7 @@ router.post('/home', (req, res, next) => {
   // 创建连接池连接
   pool.getConnection((err, connection) => {
     // 要使用的sql语句
-    let sqlRegister = 'SELECT * FROM businesscard WHERE userId="'+req.body.userId+'"';
+    let sqlRegister = 'SELECT * FROM businesscard WHERE userId="'+req.body.userId+'" ORDER BY name ASC';
     // 操作数据库
     connection.query(sqlRegister, (error, results, fields) => {
       // 如果有异常则抛出
