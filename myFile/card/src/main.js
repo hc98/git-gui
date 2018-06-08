@@ -10,9 +10,17 @@ Vue.use(Vuex)
 Vue.prototype.$axios = axios
 Vue.config.productionTip = false
 
+const store = new Vuex.Store({
+  state: {
+    count: 0
+  },
+  mutations: {}
+})
+
 /* eslint-disable no-new */
 new Vue({
   el: '#app',
+  store,
   router,
   components: { App },
   template: '<App/>'

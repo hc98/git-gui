@@ -19,10 +19,12 @@
         <a :href="'#'+item">{{item}}</a>
       </li>
     </ul>
+    <div>{{count}}</div>
   </div>
 </template>
 
 <script>
+import {mapState} from 'vuex'
 export default {
   name: 'home',
   data () {
@@ -61,10 +63,16 @@ export default {
       console.log(error)
     })
   },
+  // computed: {
+  //   count () {
+  //     return this.$store.state.count
+  //   }
+  // },
+  computed: mapState(['count']),
   methods: {
     details ($event) {
       console.log($event.target.dataset.index)
-      // this.items
+      this.$store.state.count++
     },
     list () {
       this.$axios.post('/apis/home', {
