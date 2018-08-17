@@ -1,10 +1,10 @@
 <template>
   <div class="home">
     <div class="search">
-      <input autofocus type="text" name="" id="">
+      <input autofocus type="text" name="" id="" v-model="msg">
     </div>
     <ul class="list" @click="details">
-      <li v-for="(item, index) in items" :key='index' :data-index="index">
+      <li v-for="(item, index) in items" :key='index' :data-index="item.id">
         <span>{{item.name}}</span>
         <span>{{item.company}}·{{item.past}}</span>
       </li>
@@ -45,7 +45,8 @@ export default {
         email: '',
         internetAccount: '',
         remark: ''
-      }
+      },
+      msg: 0
     }
   },
   created () {
@@ -59,20 +60,27 @@ export default {
         that.items = res.data.data
       }
     }).catch((error) => {
-      alert('操作失败')
+      console.log('操作失败-音浪-壁虎漫步')
       console.log(error)
     })
+    mapState(['detailsId', 'count'])
   },
-  // computed: {
-  //   count () {
-  //     return this.$store.state.count
-  //   }
-  // },
-  computed: mapState(['count']),
+  computed: {
+    msg: {
+      get () {
+        return this.$store.state.count
+      },
+      set (value) {
+        this.$store.commit('counts', value)
+      }
+    }
+  },
+  // computed: mapState(['detailsId', 'count']),
   methods: {
     details ($event) {
       console.log($event.target.dataset.index)
-      this.$store.state.count++
+      // this.$store.state.detailsId = $event.target.dataset.index
+      // this.$store.commit('getDetailsId', $event.target.dataset.index)
     },
     list () {
       this.$axios.post('/apis/home', {

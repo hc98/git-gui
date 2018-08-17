@@ -12,9 +12,17 @@ Vue.config.productionTip = false
 
 const store = new Vuex.Store({
   state: {
-    count: 0
+    detailsId: '',
+    count: 99
   },
-  mutations: {}
+  mutations: {
+    counts (state, n) {
+      state.count = n
+    },
+    getDetailsId (state, id) {
+      state.detailsId = id
+    }
+  }
 })
 
 /* eslint-disable no-new */

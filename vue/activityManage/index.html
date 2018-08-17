@@ -1,0 +1,1692 @@
+<html>
+<title></title>
+<meta charset="UTF-8">
+<link rel="stylesheet" href="./css/bootstrap.css" />
+<link rel="stylesheet" href="./css/easyui.css" />
+<link rel="stylesheet" href="./css/icon.css" />
+<script src="./js/lib.js"></script>
+<script src="./js/jquery.easyui.min.js"></script>
+<script src="./js/tether.min.js"></script>
+<script src="./js/bootstrap.js"></script>
+<script src="./js/vue-router.min.js"></script>
+<script src="https://cdn.bootcss.com/vue-resource/1.3.3/vue-resource.min.js"></script>
+<script src="./js/FileSaver.min.js"></script>
+<style> 
+    html,
+    body {
+        height: 100%
+    }
+    
+    ul {
+        list-style: none;
+    }
+    
+    .headPortrait {
+        width: 2.5rem;
+    }
+    
+    .cfd0d1 {
+        background-color: #cfd0d1;
+        border-color: #cfd0d1;
+        color: #FFFFFF;
+    }
+    
+    .createActivity {
+        color: #000000;
+        padding: 0.4rem 2.5rem;
+        text-align: left;
+        border-radius: 3.15rem;
+        display: inline-block;
+        margin-bottom: 1 rem;
+    }
+    
+    .h5Manager {
+        color: #a5a5a5;
+        padding: 0.4rem 2.5rem;
+    }
+    
+    .addHref {
+        color: #000000;
+        padding: 0.4rem 2.5rem;
+        background-color: #f2f2f2;
+        display: inline-block;
+        cursor: pointer;
+    }
+    
+    .managerKind .managerActive {
+        margin-bottom: 1rem;
+    }
+    
+    #h5UpLoadDialog {
+        width: 400px;
+        position: absolute;
+        transform: translate(-50%, -50%);
+        left: 50%;
+        top: 50%;
+        z-index: 100;
+        background-color: #FFFFFF;
+        padding: 10px;
+        border-radius: 5px;
+    }
+    
+    .popularizationPlan li {
+        float: left;
+        margin-right: 30px;
+    }
+    
+    #shadow {
+        left: 0;
+        top: 0;
+        background-color: rgba(0, 0, 0, 0.3);
+        position: fixed;
+        width: 100%;
+        height: 100%;
+    }
+    
+    #h5UpLoadDialog textarea {
+        height: 220px;
+        resize: none;
+    }
+    
+    #managerActive {
+        padding: 1rem;
+    }
+    
+    #managerActive .managerActive,
+    #managerActive .H5Manager {
+        padding-left: 2.5rem;
+    }
+    
+    .activeRules label {
+        margin-right: 20px;
+    }
+    
+    .activeRules .completeRge {
+        margin-right: 312px;
+    }
+    
+    .activeRules .form-group {
+        margin-right: 40px;
+       
+    }
+    
+    .activeRules .userReward .form-group {
+        width: 116px;
+    }
+    
+    .activeRules input[type="text"] {
+        width: 80px;
+       /* margin-right: 16px;*/ 
+    }
+    
+    .activeRules input[type='checkbox'],
+    .activeRules input[type='radio'] {
+        width: 30px;
+        height: 30px;
+    }
+    
+    .activeRules .userReward .form-group {
+        margin-right: 20px;
+    }
+    
+    .activeRules .form-inline {
+        margin-bottom: 15px;
+    }
+    .activeRules .form-inline input {
+        width:60px;  
+    }
+    .activeRules .regName {
+        margin-right: 200px;
+    }
+    .activeRules .one_only {
+        margin-right: 105px;
+    }
+    .clear:after {
+        content: '';
+        display: block;
+        clear: both;
+    }
+    
+    .mySearch {
+        width: 150px;
+        display: inline-block;
+        vertical-align: bottom;
+    }
+    
+    .table-center {
+        text-align: center;
+        vertical-align: middle;
+    }
+    
+    .dbEdit input {
+        width: 100px;
+    }
+    
+    .activityType input {
+        width: 30px;
+        height: 30px;
+    }
+    
+    .activityType label {
+        margin-right: 30px;
+    }
+    button {
+        cursor: pointer;
+    }
+    input[type="radio"],input[type="checkbox"] {
+        cursor: pointer;
+    }
+    td:hover,th:hover {
+    	cursor: pointer;
+    }
+</style>
+</head>
+
+<body>
+    <div id="app">
+        <nav class="navbar navbar-expand-lg navbar-light bg-faded rounded">
+            <a class="navbar-brand" href="#">
+                <span class="float-left">Pop On校园大使后台管理系统</span>
+                <span class="float-right ">
+	<img class="rounded-circle headPortrait" src="http://7xk8ky.com1.z0.glb.clouddn.com/new_topic_family_bg.png"/>
+	<span>用户名</span> 
+            </a>
+        </nav>
+        <div id="managerActive">
+            <router-view :shadow="shadow"></router-view>
+        </div>
+        <div id="shadow" v-if="shadow.state">
+        </div>
+    </div>
+    <script> 
+        $.fn.datebox.defaults.editable = false;
+        Vue.http.options.emulateJSON = true;
+        Vue.http.options.headers = {
+            'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8'
+        };
+        var globabObj = {};
+        //var GlobalPort = document.location.origin; 
+        var GlobalPort = "http://"+window.location.host;
+        var pageSize = 8;
+        //http://192.168.1.48/wordoor_activity_api/v1/activity/list?pageNo=1&pageSize=10
+        //http://192.168.1.48/wordoor_activity_api/v1/activity/list?pageSize=10&pageNo=1
+        var H5ManagerUrl = GlobalPort + '/wordoor_activity_api/v1/activity/listUrl';
+        var H5ManagerSaveUrl = GlobalPort + '/wordoor_activity_api/v1/activity/saveUrl';
+        var H5ManagerSave = GlobalPort + '/wordoor_activity_api/v1/activity/save';
+        var ManagementActivity = GlobalPort + '/wordoor_activity_api/v1/activity/list';
+        //大使列表
+        var AmbassadorList = GlobalPort + '/wordoor_activity_api/v1/activity/listMember';
+        var activeDetail = GlobalPort + '/wordoor_activity_api/v1/activity/detail';
+        //参与活动用户列表
+        var activeUserList = GlobalPort + '/wordoor_activity_api/v1/activity/listUser';
+        //改变状态
+        var changeStateUrl = GlobalPort + '/wordoor_activity_api/v1/activity/updateState';
+        //活动-参与者列表
+        var participantsUrl = GlobalPort + '/wordoor_activity_api/v1/activity/listUser';
+        //活动大使信息修改
+        var activalAmbassador = GlobalPort + '/wordoor_activity_api/v1/activity/updateMember';
+        //活动删除
+        var activalRemove = GlobalPort + '/wordoor_activity_api/v1/activity/remove';
+        var editActivityUrl =   GlobalPort + '/wordoor_activity_api/v1/activity/detail';
+
+        var H5Manager = {
+            template: `  	<div class="row">
+	        		<div class="col-2">
+	        			<div class="createActivity "> <router-link to="/createActivity">创建活动</router-link></div>
+	        			<div class="managerKind">
+	        				<div class="managerActive"><router-link to="/ManagerActive" @click="managerActive" >管理活动</router-link></div>
+	        				<div class="H5Manager cfd0d1 createActivity"><router-link to="/H5Manager">H5管理</router-link></div>
+	        			</div>
+	        		</div>
+	        	<div class="col-10" style="margin-top: 2rem;">
+	        		<div class="row">
+	        		<div class="col-12">
+	        			<div class="row">
+	        				<div class="h5Manager col-8">H5管理</div>
+	        				<div class="col-4">
+	        					<div class="addHref float-left" @click="h5Upload">添加链接</div>
+	        					<button @click="prev" class="btn btn-default">上</button>    
+	        					<button @click="next" class="btn btn-default">下</button>
+	        				</div>
+	        			</div>
+	        		</div>
+	        			<div class="col-12" >
+	        			<table class="table  table-hover H5ManagerTable">
+	        				<thead>
+	        					<tr>
+	        						<th width="20%">活动名称</th>
+	        						<th width="60%">活动链接</th>
+	        						<th width="20%">活动状态</th>
+	        					</tr>
+	        					<tr v-for="data in H5ManagerData.items">
+	        						<th width="20%" >{{data.name}}</th>
+	        						<th width="60%">{{data.url}}</th>
+	        						<th width="20%" @click="changeState(data.id,data.state)" style="cursor:pointer;">{{data.state==1?"使用中":"停止使用中"}}</th>
+	        					</tr>
+	        				</thead>
+	        			</table>
+	        		</div>
+					</div>	        		
+						<div class="managerActivePage">
+		        		<div class="tcdPageCode">
+		        		</div>
+	        		</div>
+	        	</div>
+	        	<div id="h5UpLoadDialog" v-if="h5UpLoadDialog">
+					<h3>H5上传</h3>
+					<div class="form-group">
+						<label for="name">名称</label>
+						<input type="text" class="form-control" id="name" 
+							   placeholder="请输入名称" v-model="hrefName">
+					</div>
+					<div class="form-group">
+						<label for="name">链接地址</label>
+						<textarea type="text" class="form-control" id="name" 
+							   placeholder="请输入名称" v-model="hrefAddress"></textarea>
+					</div>
+					<div class="text-right">
+						<button class="btn btn-default add" @click="add">添加</button>
+						<button class="btn btn-default cancel" @click="cancel">取消</button>
+					</div>
+	        	</div>
+	        	</div>
+	       `,
+            props: ['shadow'],
+            data: function() {
+                return {
+                    h5UpLoadDialog: false,
+                    current: 1,
+                    hrefName: '',
+                    hrefAddress: '',
+                    H5ManagerData: ''
+                }
+            },
+            methods: {
+                'h5Upload': function() {
+                    this.h5UpLoadDialog = true;
+                    this.shadow.state = true;
+                },
+                add: function() {
+                    var saveObj = {
+                        id: -1,
+                        name: this.hrefName,
+                        state: '',
+                        url: this.hrefAddress
+                    }
+                    this.saveUrl(saveObj);
+                },
+                prev: function() {
+                    this.current = this.current - 1 >= 1 ? this.current - 1 : 1;
+                    this.getPage(pageSize, this.current);
+                    bus.$emit('h5Page', this.current);
+                },
+                next: function() {
+                    this.current = this.current + 1 > this.H5ManagerData.lastPageNumber ? this.H5ManagerData.lastPageNumber : this.current + 1;
+                    this.getPage(pageSize, this.current);
+                    bus.$emit('h5Page', this.current);
+                },
+                cancel: function() {
+                    this.h5UpLoadDialog = false;
+                    this.hrefName = '';
+                    this.hrefAddress = '';
+                    this.shadow.state = false;
+                },
+                getPage: function(ps, pn) {
+                    this.$http.post(H5ManagerUrl, {
+                            pageSize: ps,
+                            pageNo: pn
+                        })
+                        .then(function(data) {
+                            if (data.status == 200) {
+                                if (data.body.code == 200) {
+                                    this.H5ManagerData = data.body.result;
+                                }
+                            }
+                        });
+                },
+                saveUrl: function(Mydata) {
+                    this.$http.post(H5ManagerSaveUrl, Mydata).then(function(data) {
+                        if (data.status == 200) {
+                            if (data.body.code == 200) {
+                                this.getPage(pageSize, 1)
+                                this.cancel();
+                            } else {
+                                $.messager.alert('友情提示', data.body.msg);
+                            }
+                        } else {
+                            $.messager.alert('友情提示', "服务器异常");
+                            this.cancel();
+                        }
+                    });
+                },
+                changeState: function(id) {
+                    this.H5ManagerData.items.forEach(function(elem) {
+                        if (elem.id == id) {
+                            elem.state = elem.state == 1 ? 2 : 1;
+                            var saveObj = {
+                                id: id,
+                                name: elem.name,
+                                state: elem.state,
+                                url: elem.url
+                            }
+                            this.saveUrl(saveObj);
+                        }
+                    }.bind(this));
+                }
+            },
+            mounted: function() {
+                //H5ManagerUrl+='?pageSize=10&pageNo=1'
+                this.getPage(pageSize, 1);
+            }
+        } 
+        var createActivity = {
+                template: `
+		       			<div class="row">
+	        		<div class="col-2">
+	        			<div class="cfd0d1 createActivity"> <router-link to="/createActivity">创建活动</router-link></div>
+	        			<div class="managerKind">
+	        				<div class="managerActive"><router-link to="/ManagerActive" @click="managerActive">管理活动</router-link></div>
+	        				<div class="H5Manager "><router-link to="/H5Manager">H5管理</router-link></div>
+	        			</div>
+	        		</div>
+	        	<div class="col-10" style="margin-top: 2rem;">
+	        				<form class="form-horizontal" role="form">
+						  <div class="form-group">
+						    <label for="firstname" class="col-sm-2 control-label">活动名称</label>
+						    <div class="col-sm-10">
+						      <input type="text" class="form-control" v-model="activeName" id="firstname" placeholder="请输入名字">
+						    </div>
+						  </div>
+						  <div class="form-group">
+						    <label for="lastname" class="col-sm-2 control-label">结束时间</label>
+						    <div class="col-sm-10">
+						      <input style="height:38px" type="text" class="form-control myTime" id="lastnameAdd" placeholder="请输入姓">
+						    </div>
+						  </div>
+						  <div>
+                            <p>活动展现类型</p>
+                            <div class="activityType">
+                                <form class="form-inline">
+                                    <label class="checkbox-inline">
+                                        <input type="radio"  name="activityType" v-model="type" value="1">二维码
+                                    </label>
+                                    <label class="checkbox-inline">
+                                     <input type="radio" name="activityType" v-model="type" value="2">链接
+                                    </label>
+                                    <label class="checkbox-inline">
+                                     <input type="radio" name="activityType" v-model="type" value="3">系统
+                                    </label>
+                                </form>
+                            </div>
+                          </div>
+						  <div class="activeRules">
+						  	<p>活动规则</p>
+						  	<ul>
+						  		<li>
+						  			<div>
+							  			<form class="form-inline" role="form">
+                                            <template v-for="(data,key) in radioData">
+                                                <label  :class="data.className"><input type="radio"  
+                                                name="rule" v-model="rule" :value="data.rule">{{data.name}}</label>
+                                                <div class="form-group" v-if="!(data.ruleGoal===undefined)">
+                                                <input @change="change(data.ruleGoal)" :disabled="data.rule!=rule" 
+                                                type="text" v-model="data.ruleGoal" id="name" class="form-control">{{data.inputName}}</div>
+                                                <div v-if="key==5 || key==2"  style="width: 100%;  margin-bottom: 12px;"></div>
+                                            </template>
+
+                                            <div  style="width: 100%; margin-bottom: 12px;">用户奖励</div>
+
+                                            <div class="form-group" style="width:1000px">
+  
+                                                <div class="checkbox">
+                                                    <label>
+                                                        <input :checked="userRewardsTwo[0].checkbox"
+                                                         v-model="userRewardsTwo[0].checkbox" @change="changeStateWu(userRewardsTwo[0].checkbox)" type="checkbox">无 
+                                                    </label>
+                                                </div> 
+
+                                                <div class="checkbox">
+                                                    <label>
+                                                        <input type="checkbox" @change="changeState(userRewardsTwo[1].checkbox)" :checked="userRewardsTwo[1].checkbox" v-model="userRewardsTwo[1].checkbox">PopCoin
+                                                    </label>   
+                                                 </div>  
+                                                 <input type="number"  v-model ="userRewardsTwo[1].num" class="form-control">个  
+                                                 <div class="btn btn-success" @click="addReward" style="cursor:pointer;margin-left:100px;">添加</div>
+                                                <ul style="width:1000px;">    
+                                                    <reward-choose v-for="(item, index) in userRewardsList" :index="index" :reward="userRewardsList" v-on:check="childrenCheck" style="float:left;margin-right:50px;"></reward-choose>                   
+                                                </ul>             
+                                                <div class="form-group" style="margin-top:20px;">              
+                                                    <label for="name">选择列表</label>  
+                                                    <select class="form-control" v-model="selected" @change="selectedUrl">
+                                                        <option v-for="data in urlData"  :value="data.id" >{{data.url}}</option>
+                                                    </select> 
+                                                    <div style="margin-left:50px;">二维码个数</div>  
+                                                    <input type="number" v-model="qRcode" class="form-control" style="width:60px;" /> 个
+                                                </div> 
+                                            </div>    
+						                </form>
+	        				<div class="text-center">
+	        					<div class="btn btn-success" @click="save" style="cursor:pointer;">提交</div>
+	        				</div>  
+	        	</div>
+	        	</div> 
+		       		`, 
+                mounted: function() {
+                    var vmThis = this;
+                    $('.panel.combo-p').remove();
+                    $('#lastnameAdd').datebox({
+                        onSelect: function(date) {
+                            var strYear = date.getFullYear() + "-" + (date.getMonth() + 1) + "-" + date.getDate()
+                            vmThis.endTime = strYear;
+                        }
+                    });  
+                 },
+                created: function() {
+                    this.pageNo = this.$parent.$data.H5ManagerPageNo;
+                    this.$http.post(H5ManagerUrl, {
+                            pageSize: pageSize,
+                            pageNo: this.pageNo
+                        })
+                        .then(function(data) { 
+                            if (data.status == 200) {
+                                if (data.body.code == 200) {
+                                    this.urlData = data.body.result.items;
+                                }
+                            }
+                        });
+                },
+                data: function() {
+                    return {
+                        activeName: '',
+                        endTime: '', 
+                        rule: "",
+                        ruleGoal: '',  
+                        pageNo: 1,
+                        urlData: '',
+                        qRcode: '',
+                        userRewardsSave: '', 
+                        url: '',
+                        type: '1',
+                         
+                        userRewardsTwo:[
+                           {
+                                checkbox: true,
+                               value: 1
+                            },
+                             {
+                                checkbox: false,
+                                num: '', 
+                                value: 2
+                            } 
+                        ],   
+                        userRewardsList:[],
+                        selected: '',
+                        radioData: [{ 
+                            rule: 0,
+                            name: '   无',
+                            inputName: '',   
+                            className: {
+                                regName: true
+                            }
+                        }, { 
+                            rule: 1,
+                            name: '完成注册',
+                            inputName: '',
+                            className: {
+                                regName: true,
+                                one_only:true
+                            }
+                        }, 
+                        {
+                            rule: 9,
+                            name: '申请教练或语伴',
+                            inputName: '',
+                            className: {
+                                regName: true
+
+                            }
+                        }, 
+                        { 
+                            rule: 4,
+                            ruleGoal: '',
+                            name: '发布',
+                            inputName: '语伴订单',
+                        }, {
+                            rule: 2,
+                            ruleGoal: '',
+                            name: '关注',
+                            inputName: '人'
+                        }, { 
+                            rule: 5,
+                            ruleGoal: '',
+                            name: '发布',
+                            inputName: '教练订单'
+                        }, {
+                            rule: 3,
+                            ruleGoal: '',
+                            name: '发布',
+                            inputName: '动态'
+                        }, {
+                            rule: 6,
+                            ruleGoal: '', 
+                            name: '充值',
+                            inputName: '元'
+                        }] 
+                    }  
+                },  
+                methods: { 
+                    childrenCheck:function(msg){ 
+                        this.userRewardsTwo[0].checkbox = msg; 
+                    },  
+                    addReward:function(){
+                    var obj = {
+                            checkbox: false,  
+                            num: 0,   
+                            price:0,   
+                            value: 3      
+                        };   
+                        this.userRewardsList.push(obj);  
+                     }, 
+                    change: function(val) {
+                        this.ruleGoal = val;
+                    },
+                    selectedUrl: function() {
+                        var selectId = this.selected;
+                        this.urlData.forEach(function(elem, key) {
+                            if (elem.id == selectId) {
+                                this.url = elem.url;
+                            }
+                        }.bind(this)); 
+                    },
+                    save: function() {
+                        var newArr = this.userRewardsTwo.concat(this.userRewardsList);  
+                        var userRewardsStr = '';
+                        for(var i=0;i<newArr.length;i++){
+                             if(newArr[i].checkbox){
+                                 i == 1 ? (userRewardsStr += newArr[i].value + ',' + newArr[i].num + ',;' ) : (userRewardsStr += newArr[i].value + ',' + (newArr[i].price || 0) +','+ (newArr[i].num || 0) + ';');
+                            } 
+                        }  
+                        if (this.activename === '') {
+                            $.messager.alert('友情提示', '请输入名字');
+                            return false;
+                        }
+                        if (this.rule === '') {
+                            $.messager.alert('友情提示', '请选择用户规则');
+                            return false; 
+                        }
+                        if (this.selected === '') {
+                            $.messager.alert('友情提示', '请选择列表');
+                            return false;
+                        }  
+                        if (this.qRcode === '') {
+                            $.messager.alert('友情提示', '请输入二维码个数');
+                            return false;
+                        }  
+                        var Mydata = {  
+                            id: -1,
+                            name: this.activeName,  
+                            endTime: this.endTime,
+                            rule: this.rule,
+                            ruleGoal: this.ruleGoal || 1, 
+                            qrNum: this.qRcode,
+                            urlId: this.selected, 
+                            url: this.url,
+                            reward: userRewardsStr,
+                            type: this.type
+                        } 
+                        this.$http.post(H5ManagerSave, Mydata).then(function(data) {
+                            if (data.status == 200) {
+                                if (data.body.code == 200) {
+                                    $.messager.alert('友情提示', data.body.codemsg);
+                                    document.location.hash = '#/' + 'ManagerActive';
+                                } else {
+                                    $.messager.alert('友情提示', data.body.msg);
+                                }
+                            } else {
+                                $.messager.alert('友情提示', "服务器异常");
+                            }
+                        }); 
+                    },
+                    changeState: function(state) {
+                        state ? (this.userRewardsTwo[0].checkbox = false) : ''
+                          state = !state;  
+                     },  
+                     changeStateWu: function(state) {
+                        if(state){ 
+                            this.userRewardsTwo[1].checkbox = false;
+                            for(var i=0;i<this.userRewardsList.length;i++){
+                                this.userRewardsList[i].checkbox = false;
+                            }
+                          } 
+                        state = !state;     
+                     }      
+                }
+            }
+        var activityRewardChoose = {   
+            template:`<li>
+                 <div class="checkbox"> 
+                    <input type="checkbox" :checked="rewardCom.checkbox" v-model="rewardCom.checkbox" style="position:relative;top:10px;"  @change="changeRes">    
+                    <input type="number" v-model="rewardCom.price" class="form-control" @change="changeRes">美金 
+                    <select class="form-control" v-model="rewardCom.value" @change="changeRes" style="margin-left:10px;">      
+                        <option v-for="data in rewardType"  :value="data.value" >{{data.display}}</option>  
+                    </select>       
+                    <input type="number" v-model="rewardCom.num" class="form-control" @change="changeRes">个      
+                </div>      
+                </li>    
+            `,
+            props:['reward','index'],
+            created:function(){
+            	 this.rewardCom = this.reward ? this.reward[this.index] : this.rewardCom;   
+            },                           
+            data:function(){      
+                return {  
+                     rewardType:[
+                        {  
+                            value:3,
+                            display:'语伴体验卷'
+                        },
+                        {
+                            value:4,
+                            display:'教练体验卷'
+                        },
+                        {  
+                            value:5,
+                            display:'通用体验卷'
+                        }
+                    ],
+
+                     rewardCom:{
+                            checkbox: false, 
+                            num: 0,     
+                            price:0,    
+                            value: 3     
+                        }      
+                }  
+                
+            },
+            methods:{
+                changeRes:function(){  
+                	 this.reward[this.index] = this.rewardCom;
+                         if(this.rewardCom.checkbox){ 
+                            this.$emit('check', false);  
+                          }   
+                     this.$emit('update:reward', this.reward = this.reward);  
+                }  
+            }
+         } 
+        
+            //管理活动
+       
+        var ManagerActive = {
+            template: `
+		       		<div>
+		       			<div class="row" >
+			        		<div class="col-2">
+			        			<div class="createActivity "> <router-link to="/createActivity">创建活动</router-link></div>
+			        			<div class="managerKind">
+			        				<div class="managerActive cfd0d1 createActivity" @click="managerActive"><router-link to="/ManagerActive" >管理活动</router-link></div>
+			        				<div class="H5Manager "><router-link to="/H5Manager">H5管理</router-link></div>
+			        			</div>
+			        		</div>
+	        	<div class="col-10" v-if="show.state" style="margin-top: 2rem;">
+	        		<div class="row" >
+	        			<div class="col-8">
+	        			  	<p>活动管理</p>
+	        			</div>
+	        			<div class="col-4">
+                            <button class="btn btn-default" @click="changePage(prev)">上</button>
+                            <button class="btn btn-default" @click="changePage(next)">下</button>
+	        			</div>
+	        		</div>
+	        		<div class="row">
+	        			<table class="table table-hover">
+	        				<thead>
+	        					<tr>
+	        						<th>活动名称</th>
+	        						<th>活动规则</th>
+	        						<th>大使人数</th>
+	        						<th>h5名称</th>
+	        						<th>总酬金</th>
+	        						<th>推广成功设备总数</th>
+                                    <th></th>
+	        					</tr>
+	        				</thead>
+	        				<tbody>
+	        					<tr v-for="(data,index) in managerActiveData" @click="activityDetails(index)">
+                                    <!--
+	        						<router-link to='/ManagerActive/bbb'>跳转到aa</router-link>
+	        						-->
+                                    <td>
+                                        {{data.name}}
+                                    </td>
+                                    <td>
+                                        {{data.rule}}
+                                    </td>
+                                    <td>
+                                      {{data.memberNum}}
+                                    </td>
+                                    <td>
+                                        {{data.urlNameShow}}
+                                    </td>
+                                    <td>
+                                        {{data.totalReward}}
+                                    </td>
+                                    <td>
+                                        {{data.totalDeviceNum}}
+                                    </td>
+                                    <td><button class="btn btn-default" @click.stop="remove(data.id,current)">删除</button></td>
+	        					</tr>
+	        				</tbody>
+	        			</table>
+	        		</div>
+	        		</div>
+	        		<div class="col-10">
+		        			<router-view :show='show'></router-view>
+		        	</div>
+	        	</div>
+	        		<div class="row">
+	        			<div class="col-2"></div>
+	        		</div>
+	        	</div>
+		       		`,
+            data: function() {
+                return {
+                    show: {
+                        state: true
+                    },
+                    managerActiveData: '',
+                    current: 1,
+                    totalPage: 1
+                }
+            },
+            methods: {
+                activityDetails:function(indexOne){
+                    this.managerActiveData.forEach(function(elem, index) {
+                        if(indexOne == index){
+                             document.location.hash = '/ManagerActive/' + elem.urlName + '/' + elem.id;
+                        }
+                    });
+                    
+                },
+                changePage: function(pn) {
+                    this.getPage(pn);
+                    this.current = pn;
+                },
+                managerActive: function() {
+                    bus.$emit('show');
+                },
+                reloadData: function() {},
+                getPage: function(pn) {
+                    this.$http.post(ManagementActivity, {
+                        pageSize: pageSize,
+                        pageNo: pn
+                    }).then(function(data) {
+                        if (data.status == 200) {
+                            if (data.body.code == '200') {
+                                this.managerActiveData = data.body.result.items;
+                                this.current = data.body.result.pageNumber;
+                                this.totalPage = data.body.result.totalPageCount;
+                                this.managerActiveData.forEach(function(elem, index) {
+                                    elem.urlNameShow  = '/ManagerActive/' + elem.urlName + '/' + elem.id;
+                                });
+                            }
+                        }
+                    });
+                },
+                remove:function(id,pn) {
+                    $.messager.confirm('友情提示', '确定要删除吗', function(confirm) {
+                        if (!confirm) {
+                            return false;
+                        }
+                        this.$http.post(activalRemove, {
+                            activityId: id
+                        }).then(function(data) {
+                            if (data.status == 200) {
+                                if (data.body.code == '200') {
+                                   this.getPage(pn);
+                                }
+                            }
+                        });
+                    }.bind(this));
+                }
+            },
+            computed: {
+                prev: function() {
+                    return this.current - 1 >= 1 ? this.current - 1 : 1;
+                },
+                next: function() {
+                    return this.current + 1 > this.totalPage ? this.totalPage : this.current + 1;
+                }
+            },
+            created: function() {
+                //ManagementActivity
+                this.getPage(1);
+            },
+            mounted: function() {
+                bus.$on('reloadData', function() {
+                    this.getPage(1);
+                }.bind(this));
+                bus.$on('show', function() {
+                    this.show.state = true;
+                }.bind(this));
+            }
+        };
+        var aaa = {
+            template: `
+		       		<div>
+                        <div v-if="detail">
+		       				<h1><button class="btn btn-default" @click='back' value="返回">返回</button>
+                                活动管理-{{$route.params.schoolName}}</h1>
+                            <ul class="popularizationPlan clear">
+                                <li>
+                                    <p>活动规则：{{item.rule}}</p>
+                                </li>
+                                <li>
+                                    <p>用户奖励：{{item.reward}}</p>
+                                </li>
+                                <li>
+                                    <p>结束时间：{{item.endTime}}</p>
+                                </li>
+                                <li>
+                                    <p>总酬金：{{item.totalReward}}</p>
+                                </li>
+                            </ul>
+                            <div>
+                                <template v-if="item.state==1">
+                                    <button class="btn btn-default start" @click="changeState(item.state)">开始</button>
+                                    <router-link :to="{path:'/editActivity',query:{id:item.id}}"><button class="btn btn-default edit">编辑</button></router-link>
+                                 </template>
+                                <template v-if="item.state==2"> 
+                                <!--
+                                     <button class="btn btn-default start" @click="checkTheActiveUser">查看活动用户</button>
+                                -->
+                                      <button class="btn btn-default start" @click="changeState(item.state)">停止</button>
+                                </template>
+                                 <template v-if="item.state==4">
+                                 <!--
+                                     <button class="btn btn-default start" @click="checkTheActiveUser">查看活动用户</button>
+                                    -->
+                                     <button class="btn btn-default start" @click="changeState(item.state)">继续运行</button>
+                                    <!--  <button class="btn btn-default start" >重新编辑</button>-->
+                                </template>
+                            </div>
+                            <div class="float-right" style="margin-right:200px">
+                                <input type='search' class="form-control mySearch" v-model="realName"  placeholder="查询内容" />
+                                <button class="btn btn-default" @click="search">搜索</button>
+                                <button class="btn btn-default" @click="change(prev)">上</button>
+                                <button  class="btn btn-default" @click="change(next)">下</button>
+                            </div>
+                                <table class="table table-bordered table-hover table-center">
+                                    <thead>
+                                        <tr>
+                                            <td>序号</td>
+                                            <td>大使名称</td>
+                                            <td>大使手机号</td>
+                                            <td>用户酬金</td>
+                                            <td>二维码</td>
+                                            <td>二维码页面开启次数</td>
+                                            <td>已经完成设备数</td>
+                                            <td>大使酬金</td>
+                                            <td>其它</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody class="dbEdit">
+                                        <tr v-for="data in popularizationPlan">
+                                            <td>{{data.id}}
+                                            </td>
+                                            <td  @dblclick="showInput(data.id,$event)" >
+                                                <span v-if="!data.inputShow">{{data.relName}}</span>
+                                                 <input class="form-control" @focus="showInput(data.id,$event)" v-if="data.inputShow" @blur="hideInput(data.id)"  v-model="data.relName" />
+                                            </td>
+                                            <td @dblclick="showInput(data.id,$event)">
+                                                 <span v-if="!data.inputShow"> {{data.mobile || ''}}</span>  
+                                                 <input class="form-control" @focus="showInput(data.id,$event)" v-if="data.inputShow" @blur="hideInput(data.id)"  v-model="data.mobile" />
+                                           </td>
+                                            <td @dblclick="showInput(data.id,$event)">
+                                                 <span v-if="!data.inputShow">  {{data.singleReward}}</span>
+                                                 <input class="form-control" @focus="showInput(data.id,$event)"  v-if="data.inputShow" @blur="hideInput(data.id)"  v-model="data.singleReward" />
+                                           </td>
+                                            <td >{{data.qrUrl}}</td>
+                                            <td>
+                                                 <span v-if="!data.inputShow"> {{data.qrNum}}</span>
+                                           </td>
+                                            <td>
+                                                 <span v-if="!data.inputShow"> {{data.deviceNum}}</span>
+                                           </td>
+                                            <td>
+                                                 <span v-if="!data.inputShow">  {{data.reward='null'?'0':data.reward}}</span>
+                                           </td>
+                                            <td>
+                                                <div>
+                                                     <router-link  class="btn btn-default" :to="data.detailUrl">查看具体用户</router-link>
+                                                </div>
+                                                <div><button class="btn btn-default" @click="start(data.id,data.state)">{{data.state==1?"结束":"开始"}}</button></div>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                        </div>
+                             <router-view :detail="detail" >
+                            </router-view> 
+                    </div>
+                    `,
+            props: ['show'],
+            mounted: function() {
+                this.show.state = false;
+                bus.$on("detail", function(state) {
+                    this.detail = state;
+                }.bind(this));
+            },
+            computed: {
+                prev: function() {
+                    return this.current - 1 >= 1 ? this.current - 1 : 1;
+                },
+                next: function() {
+                    return this.current + 1 > this.totalPage ? this.totalPage : this.current + 1;
+                }
+            },
+            current: 1,
+            data: function() {
+                return {
+                    
+                    item: {},
+                    totalPage: 1,
+                    popularizationPlan: [],
+                    current: 1,
+                    detail: true,
+                    realName: '',
+                    timer: ''
+                }
+            },
+            methods: {
+                back: function() {
+                     document.location.hash = '/ManagerActive';
+                    this.show.state = true;
+                },
+                /*editActivity: function() {
+                    var data = JSON.parse(JSON.stringify(this.$data.item));
+                    //document.location.hash = '#/' + 'createActivity';
+                    bus.$emit('editAcivity', data);
+                },*/
+                search: function() {
+                    this.current = 1;
+                    this.getAmbassadorList(this.current, this.$route.params.id);
+                },
+                
+                start: function(id) {
+                    this.popularizationPlan.forEach(function(elem, key) {
+                        if (elem.id == id) {
+                            var dataPost = {};
+                            dataPost.state = elem.state ? 0 : 1;
+                            elem.state = elem.state ? 0 : 1;
+                            dataPost.id = elem.id;
+                            dataPost.mobile = elem.mobile;
+                            dataPost.relName = elem.relName;
+                            dataPost.singleReward = elem.singleReward;
+                           this.startSaveAjax(dataPost);
+                        }
+                    }.bind(this));
+                },
+                startSaveAjax: function(data) {
+                    this.$http.post(activalAmbassador, data).then(function(data) {
+                        if (data.status == 200) {
+                            if (data.body.code == '200') {
+                            	 //console.log('大使状态改变成功');
+                            } else {  
+                                $.messager.alert('友情提示', data.body.codemsg);
+                            }
+                        }
+                    });
+                },
+                change: function(pn) { 
+                    this.current = pn;
+                    this.getAmbassadorList(pn, this.$route.params.id);
+                },
+                showInput: function(id, ev) {
+                    clearTimeout(this.timer);
+                    this.popularizationPlan.forEach(function(elem, key) {
+                        if (elem.id == id) {
+                            this.popularizationPlan[key].inputShow = true;
+                        }
+                    }.bind(this));
+                    this.$nextTick(function() {
+                        $(ev.toElement).find('input').focus();
+                    })
+                },
+                hideInput: function(id) {
+                    this.timer = setTimeout(function() {
+                        this.popularizationPlan.forEach(function(elem, key) {
+                            if (elem.id == id) {
+                                 var dataPost = {};
+                                dataPost.state = elem.state;
+                                dataPost.id = elem.id;
+                                dataPost.mobile = elem.mobile;
+                                dataPost.relName = elem.relName;
+                                dataPost.singleReward = elem.singleReward;
+                                this.startSaveAjax(dataPost);
+                                this.popularizationPlan[key].inputShow = false;
+                            }
+                        }.bind(this));
+                    }.bind(this), 100);
+                },
+                changeState: function(state) {
+                    if (state == 1) {
+                        this.item.state = 2;
+                    } else if (state == 2) {
+                        this.item.state = 1;
+                    } else if (state == 4) {
+                        this.item.state = 2;
+                    }
+                    this.changeStateSave(this.item.state, state);
+                },
+                changeStateSave: function(state, oriState) {
+                    this.$http.post(changeStateUrl, {
+                        id: this.$route.params.id,
+                        state: state
+                    }).then(function(data) {
+                        if (data.status == 200) {
+                            if (data.body.code != '200') {
+                                this.item.state = oriState;
+                                $.messager.alert('友情提示', data.body.msg);
+                            }
+                        }
+                    });
+                },
+                checkTheActiveUser: function() {},
+                getPage: function(pn, id) {
+                    this.$http.post(activeDetail, {
+                        pageSize: pageSize,
+                        pageNo: pn,
+                        activityId: id
+                    }).then(function(data) {
+                        if (data.status == 200) {
+                            if (data.body.code == '200') {
+                                this.item = data.body.result;
+                            }
+                        }
+                    });
+                },
+                getAmbassadorList: function(pn, id) {
+                    this.$http.post(AmbassadorList, {
+                        pageSize: pageSize / 2,
+                        pageNo: pn,
+                        id: id,
+                        relName: this.realName
+                    }).then(function(data) {
+                        if (data.status == 200) {
+                            if (data.body.code == '200') {
+                                this.totalPage = data.body.result.totalPageCount;
+                                var popularizationPlan = data.body.result.items;
+                                popularizationPlan.forEach(function(elem, key) {
+                                    elem.detailUrl = this.$route.params.id + '/' + elem.id + '/' + (elem.relName || 'null');
+                                    elem.inputShow = false;
+                                }.bind(this));
+                                this.popularizationPlan = popularizationPlan;
+                            }
+                        }
+                    });
+                }
+            },
+            created: function() {
+                // var ambassadorList = GlobalPort + '/wordoor_activity_api/v1/activity/ambassador';
+                this.getPage(1, this.$route.params.id);
+                this.getAmbassadorList(1, this.$route.params.id);
+                //参与活动用户列表
+                // var activeUserList = GlobalPort + '/wordoor_activity_api/v1/activity/listUser';
+            }
+        }
+        var ambassadorDetail = {
+            template: `<div><h1><button class="btn btn-default" @click='back' value="返回">返回</button>
+                                活动管理-{{$route.params.schoolName}}-{{$route.params.ambassadorName}}</h1>
+                                <div>
+                                    <p>活动名称</p>
+                                </div>
+                               <div class="form-group" style="width:200px;float:left;">
+							        <label >开始时间</label>
+							         <input style="height:38px;width:130px;" type="text" class="form-control myTime" id="startTime" placeholder="">
+							      </div>
+							      <div class="form-group" style="width:200px;float:left;margin-left:10px;">
+							        <label >结束时间</label>
+							        <input style="height:38px;width:130px;" type="text" class="form-control myTime" id="endTime" placeholder="">
+							      </div>
+                                <div style="float:left;margin-left:10px;">
+							         <div style="width:100px;float:left;height:40px;line-height:40px;">是否完成任务</div>
+							        <select class="form-control" style="width:100px;" @change='select(event)'>
+							          <option value='0'>未完成</option>
+							          <option value='1'>已完成</option>
+							        </select>
+							        <div style="clear:both;"></div>
+							    </div>
+                            	<div class="form-group" style="width:200px;float:left;margin-left:10px;">
+							        <label for="exampleInputPhone2">手机</label>
+							        <input type="text" class="form-control" placeholder="" style="width:150px;display:inline;" id="exampleInputPhone2">
+							      </div>
+							       <button class="btn btn-default" style="margin-left:10px;float:left;" @click="search">查找</button>
+							    <div class="float-right">
+                                    <button class="btn btn-default" @click="change(next)">下</button>
+                                    <button class="btn btn-default" @click="change(prev)">上</button>
+                                </div>
+                                <table class="table table-hover table-bordered table-condensed">
+                                    <thead>
+                                        <tr>
+                                            <td>序号</td>
+                                            <td>用户手机号</td>
+                                            <td>Device ID</td>
+                                            <td>任务情况</td>
+                                            <td>完成时间</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr v-for="data in items">
+                                            <td>{{data.id}}</td>
+                                            <td>{{data.mobile}}</td>
+                                            <td>{{data.deviceId}}</td>
+                                            <td>{{data.isCompleted}}</td>
+                                            <td>{{data.completeTime}}</td> 
+                                        </tr>
+                                    </tbody>
+                                </table>
+                        </div>
+                        `,
+            
+            data: function() {
+                return {
+                    items: [],
+                    dataPost:{
+						pageSize:pageSize,
+                        pageNo: 1,
+                        id: this.$route.params.ambassadorId,
+                        mobile:'',
+                        isCompleted:'',
+                        beginTime:'',
+                        endTime:'',
+                   
+                    }
+                }
+            },
+
+            props: ['detail'],
+            created: function() {
+                this.getData();
+            },
+            computed: {
+                prev: function() {
+                    return this.dataPost.pageNo - 1 >= 1 ? this.dataPost.pageNo - 1 : 1;
+                },
+                next: function() {
+                    return this.dataPost.pageNo + 1 > this.totalPage ? this.totalPage : this.dataPost.pageNo + 1;
+                }
+            },
+            methods: {
+                excel:function(){
+                    var dataAlong = this.items;
+                    var title = ['序号','用户手机号','Device ID','任务情况','完成时间'];
+                    var titleForKey = ['id','mobile','deviceId','taskNum','completeTime'];
+                     var exportContent = "\uFEFF";
+                     var excelData =  exportCsv({
+                        title:title,
+                        titleForKey:titleForKey,
+                        data:returnDataExcel(dataAlong)   
+                    });
+                    var blob = new Blob([exportContent+excelData],{type: "text/plain;charset=utf-8"});
+                    saveAs(blob, "orderList.csv");
+
+                },
+                back: function() {
+                    window.history.go(-1);
+                    bus.$emit('detail', true);
+                },
+                change: function(pn) {
+                    this.dataPost.pageNo = pn;
+                    this.getData();
+                },
+                select:function(e){
+                	this.dataPost.isCompleted = $(e.target).val();
+                	this.getData();
+                },
+                search:function(){
+                	this.dataPost.mobile = $('#exampleInputPhone2').val();
+                	this.getData();
+                },
+                getData: function() {
+                	this.$http.post(participantsUrl, this.dataPost).then(function(data) {
+                        if (data.status == 200) {
+                            if (data.body.code == 200) {
+                                this.items = data.body.result.items;
+                            }
+                        }
+                    })
+                }
+            },
+            mounted: function() {
+                bus.$emit('detail', false);
+                var that = this;
+            	 $('#startTime').datebox({
+                        onSelect: function(date) {
+                            var strYear = date.getFullYear() + "-" + (date.getMonth() + 1) + "-" + date.getDate();
+                            that.dataPost.beginTime = strYear;
+                            that.getData();
+                        }
+                    });
+            	 $('#endTime').datebox({
+                        onSelect: function(date) {
+                            var strYear = date.getFullYear() + "-" + (date.getMonth() + 1) + "-" + date.getDate();
+                            that.dataPost.endTime = strYear;
+                            that.getData();
+                        }
+                    });
+            }
+        };
+       /* 编辑活动页面*/
+       var editActivity = {
+                template: `
+                        <div class="row">
+                    <div class="col-2">
+                        
+                    </div>
+                <div class="col-10" style="margin-top: 2rem;">
+                            <button class="btn btn-default" @click="goback" style="margin-right:80px;float:right;">返回</button>
+                            <form class="form-horizontal" role="form">
+                          <div class="form-group">
+                            <label for="firstname" class="col-sm-2 control-label">活动名称</label>
+                            <div class="col-sm-10">
+                              <input type="text" class="form-control" v-model="activeName" id="firstname" placeholder="">
+                            </div>
+                          </div>
+                          <div class="form-group">
+                            <label for="lastname" class="col-sm-2 control-label">结束时间</label>
+                            <div class="col-sm-10">
+                              <input style="height:38px" type="text" v-model="endTime" class="form-control myTime" id="lastnameEdit" placeholder="">
+                            </div>
+                          </div>
+                         <div class="activeRules">
+                            <p>活动规则</p>
+                            <ul>
+                                <li> 
+                                    <div>
+                                        <form class="form-inline" role="form">
+                                           <template v-for="(data,key) in radioData">
+                                                <label  :class="data.className"><input type="radio"  
+                                                name="rule" v-model="rule" :value="data.rule">{{data.name}}</label>
+                                                <div class="form-group" v-if="!(data.ruleGoal===undefined)">
+                                                <input @change="change(data.ruleGoal)" :disabled="data.rule!=rule" 
+                                                type="text" v-model="data.ruleGoal" id="name" class="form-control">{{data.inputName}}</div>
+                                                <div v-if="key==5 || key==2"  style="width: 100%;  margin-bottom: 12px;"></div>
+                                            </template>
+                                            <div  style="width: 100%; margin-bottom: 12px;">用户奖励</div>
+                                            <div class="form-group" style="width:1000px; "> 
+                                                <div class="checkbox">
+                                                    <label>
+                                                        <input :checked="userRewardsTwo[0].checkbox"
+                                                         v-model="userRewardsTwo[0].checkbox" @change="changeStateWu(userRewardsTwo[0].checkbox)" type="checkbox">无 
+                                                    </label>
+                                                </div> 
+
+                                                <div class="checkbox">
+                                                    <label>
+                                                        <input type="checkbox" @change="changeState(userRewardsTwo[1].checkbox)" :checked="userRewardsTwo[1].checkbox" v-model="userRewardsTwo[1].checkbox">PopCoin
+                                                    </label>     
+                                                 </div> 
+                                                 <input type="text"  v-model ="userRewardsTwo[1].num" class="form-control">个 
+                                                <div class="btn btn-success" @click="addReward" style="cursor:pointer;margin-left:100px;">添加</div>   
+                                                <ul style="width:1000px;">    
+                                                    <reward-choose v-for="(item, index) in userRewardsList" :index="index" :reward="userRewardsList" v-on:check="childrenCheck" style="float:left;margin-right:50px;"></reward-choose>                   
+                                                </ul>              
+                                            </div>
+                                            <div  style="width: 100%; margin-bottom: 32px;"></div> 
+                                            
+                                        </form>
+                            <div class="text-center">
+                                <div class="btn btn-success" @click="save" style="cursor:pointer;">保存</div>
+                            </div>
+                </div>
+                </div>  
+                    `,
+                mounted: function() {
+                    var vmThis = this;
+                   $('.panel.combo-p').remove();  
+                    $('#lastnameEdit').datebox({
+                        onSelect: function(date) {
+                            var strYear = date.getFullYear() + "-" + (date.getMonth() + 1) + "-" + date.getDate()
+                            vmThis.endTime = strYear;
+                        } 
+                    });
+                    
+                },
+                created: function() {
+                    var index = this.$route.fullPath.indexOf('?');
+                     var myid =   this.$route.fullPath.substring(index+4);
+                     this.$http.post(editActivityUrl, {
+                            activityId: myid
+                        })
+                        .then(function(datalist) {
+                            if (datalist.data.code == 200) { 
+                               this.activeName = datalist.data.result.name;
+                               if(datalist.data.result.endTime != null && datalist.data.result.endTime != ''){
+                                    var timeShow = datalist.data.result.endTime.split(' ')[0];
+                                    var year = timeShow.substr(0,4);
+                                    var month = timeShow.substring(5);
+                                    timeShow = month.replace('-','/') +'/'+ year;
+                                    $('#lastnameEdit').datebox('setValue',timeShow);
+                               } 
+                               var rewardShow = datalist.data.result.rewardRel;
+                               rewardShow = rewardShow.split(';');
+                                rewardShow = rewardShow.slice(0,rewardShow.length-1);
+                                var newArrGetTwo = [];
+                                var newArrGetAnother = []; 
+                                var isManyReward = false; 
+                               for(var i = 0;i<rewardShow.length;i++){
+                                    var oneReward = rewardShow[i].split(',');
+                                    var newObjGet = {};
+                                    newObjGet.value = oneReward[0]; 
+                                    newObjGet.num = oneReward[0] ==2 ? oneReward[1] : oneReward[2];
+                                    newObjGet.price = oneReward[2];
+                                    newObjGet.checkbox = true;
+                                    if(newObjGet.value == 1){
+                                        isManyReward = true;
+                                         var objSecond = {};
+                                        objSecond.checkbox = false;
+                                        objSecond.value = 2; 
+                                        objSecond.num = 0;
+                                        newArrGetTwo.push(newObjGet);  
+                                        newArrGetTwo.push(objSecond);
+                                    }else if(newObjGet.value == 2){
+                                        var objFirst = {};
+                                         isManyReward = true;
+                                        objFirst.checkbox = false;
+                                        objFirst.value = 1;
+                                        newArrGetTwo.push(objFirst);
+                                        newArrGetTwo.push(newObjGet);
+                                     }else{ 
+                                       newArrGetAnother.push(newObjGet); 
+                                    }  
+                             }     
+                             if(!isManyReward){
+                                var objFirst = {};
+                                objFirst.checkbox = false;
+                                objFirst.value = 1;
+                                var objSecond = {};
+                                objSecond.checkbox = false;
+                                objSecond.value = 2;
+                                objSecond.num = 0;
+                                 newArrGetTwo.push(objFirst);
+                                newArrGetTwo.push(objSecond);
+                             } 
+                                this.userRewardsTwo = newArrGetTwo;
+                                this.userRewardsList = newArrGetAnother;
+                                switch(datalist.data.result.ruleRel){
+                                    case 0 :
+                                        this.rule = 0;  
+                                    break;
+                                    case 1 :
+                                        this.rule = 1;
+                                    break; 
+                                     case 9 :
+                                        this.rule = 9;
+                                    break;
+                                    case 2 :
+                                        this.rule = 2;
+                                        this.radioData[3].ruleGoal = this.ruleGoal = datalist.data.result.ruleGoalRel;
+                                    break;
+                                    case 3 :
+                                        this.rule = 3;
+                                        this.radioData[5].ruleGoal = this.ruleGoal = datalist.data.result.ruleGoalRel;
+                                    break;
+                                    case 4 :
+                                         this.rule = 4;
+                                         this.radioData[2].ruleGoal = this.ruleGoal = datalist.data.result.ruleGoalRel;
+                                    break;
+                                    case 5 :
+                                         this.rule = 5;
+                                         this.radioData[4].ruleGoal = this.ruleGoal = datalist.data.result.ruleGoalRel;
+                                    break;
+                                    case 6 :
+                                         this.rule = 6;
+                                         this.radioData[6].ruleGoal = this.ruleGoal = datalist.data.result.ruleGoalRel;
+                                    break; 
+                                    defaults:;
+                                    break;
+                                }
+                            }
+                        });
+                },
+                data: function() {  
+                    return {
+                        activeName: '',
+                        endTime: '',
+                        rule: "",
+                        ruleGoal: '',
+                        pageNo: 1,
+                        userRewardsSave: '',
+                         userRewardsTwo:[
+                           {
+                                checkbox: true,
+                               value: 1
+                            },
+                             {
+                                checkbox: false,
+                                num: '', 
+                                value: 2
+                            } 
+                        ],   
+                        userRewardsList:[], 
+                        addRewardType:{
+                            checkbox: false,  
+                            num: 0,   
+                            price:0,   
+                            value: 3    
+                        } ,
+                        selected: '',
+                        radioData: [{
+                            rule: 0,
+                            name: '无',
+                            inputName: '',
+                            className: {
+                                regName: true
+                            }
+                        }, {
+                            rule: 1,
+                            name: '完成注册',
+                            inputName: '',
+                            className: {
+                                regName: true
+                            }
+                        },
+                         {
+                            rule: 9,
+                            name: '申请教练或语伴',
+                            inputName: '', 
+                            className: {
+                                regName: true
+                            }
+                        }, 
+                         {
+                            rule: 4,
+                            ruleGoal: '',
+                            name: '发布',
+                            inputName: '语伴订单',
+                        }, {
+                            rule: 2,
+                            ruleGoal: '',
+                            name: '完成',
+                            inputName: '人'
+                        }, { 
+                            rule: 5,
+                            ruleGoal: '',
+                            name: '发布',
+                            inputName: '教练订单'
+                        }, {
+                            rule: 3,
+                            ruleGoal: '',
+                            name: '发布',
+                            inputName: '动态'
+                        }, {
+                            rule: 6,
+                            ruleGoal: '',
+                            name: '充值',
+                            inputName: '元'
+                        }]
+                    }
+                },
+                methods: {
+                    childrenCheck:function(msg){ 
+                        this.userRewardsTwo[0].checkbox = msg; 
+                    },  
+                    addReward:function(){ 
+                        this.userRewardsList.push(this.addRewardType); 
+                    }, 
+                    goback:function(){
+                        window.history.go(-1);
+                    },
+                    change: function(val) {
+                        this.ruleGoal = val;
+                    },
+                    onlyClick:function(val){
+                        this.ruleGoal = val; 
+                    },
+                      
+                    save: function() {
+                         var index = this.$route.fullPath.indexOf('?');
+                         var newArr = this.userRewardsTwo.concat(this.userRewardsList); 
+                        var userRewardsStr = '';
+                        for(var i=0;i<newArr.length;i++){
+                             if(newArr[i].checkbox){
+                                 i == 1 ? (userRewardsStr += newArr[i].value + ',' + newArr[i].num + ';' ) : (userRewardsStr += newArr[i].value + ',' + (newArr[i].price || '') +','+ (newArr[i].num || '') + ';');
+                            }
+                        }  
+                        if(this.rule == 0 || this.rule == 1){
+                            this.ruleGoal = 1;
+                        } 
+                       if (this.activeName === '') {
+                            $.messager.alert('友情提示', '请输入名字！');
+                            return false;
+                        }
+                        if (this.rule === '') {
+                            $.messager.alert('友情提示', '请选择用户规则！！！');
+                            return false;
+                        }
+                       var Mydata = {
+                            id: this.$route.fullPath.substring(index+4),
+                            name: this.activeName,
+                            endTime: this.endTime,
+                            rule: this.rule,
+                            ruleGoal: this.ruleGoal || 1,
+                            reward: userRewardsStr
+                        } 
+                         this.$http.post(H5ManagerSave, Mydata).then(function(data) {
+                            if (data.status == 200) { 
+                                if (data.body.code == 200) {
+                                    document.location.hash = '#/' + 'ManagerActive/'+Mydata.name+'/'+Mydata.id ;
+                                } else {
+                                    $.messager.alert('友情提示', data.body.msg);
+                                } 
+                            } else { 
+                                $.messager.alert('友情提示', "服务器异常");
+                            }
+                        }); 
+                    },
+                     changeState: function(state) {
+                        state ? (this.userRewardsTwo[0].checkbox = false) : '';
+                          state = !state;   
+                     },  
+                     changeStateWu: function(state) {
+                        if(state){ 
+                            this.userRewardsTwo[1].checkbox = false;
+                            for(var i=0;i<this.userRewardsList.length;i++){
+                                this.userRewardsList[i].checkbox = false;
+                            }
+                          } 
+                        state = !state;       
+                     }   
+                }
+            };
+        var routes = [{
+            path: '/createActivity',
+            component: createActivity
+        }, 
+        {
+            path: '/editActivity',
+            component: editActivity
+        }, {
+            path: '/H5Manager',
+            component: H5Manager
+        }, {
+            path: '/ManagerActive',
+            component: ManagerActive,
+            children: [{
+                path: ':schoolName/:id',
+                component: aaa,
+                children: [{
+                    path: ':ambassadorId/:ambassadorName',
+                    component: ambassadorDetail
+                }]
+            }, ]
+        }, {
+            path: '*',
+            redirect: '/createActivity'
+        }];
+         Vue.component('reward-choose',activityRewardChoose);   
+        //生成路由实例
+        var router = new VueRouter({
+            routes
+        });
+        var bus = new Vue();
+        var vm = new Vue({
+            el: '#app',
+            data: function() {
+                return {
+                    shadow: {
+                        state: false
+                    },
+                    H5ManagerPageNo: 1
+                }
+            },
+            created: function() {
+                bus.$on('h5Page', function(val) {
+                    this.H5ManagerPageNo = val;
+                }.bind(this));
+            },
+            router,
+            methods: {
+                'h5Upload': function() {
+                    this.h5UpLoadDialog = true;
+                    this.shadow.state = true;
+                }
+            },
+            mounted: function() {
+            	
+            }
+        })
+         /*导出数据的方法*/
+      function returnDataExcel(result){
+        $.each(result,function(index,item){
+              for(var key in item){
+                  if(item[key] == null){
+                    item[key] = ' ';
+                  }
+              }
+             
+         })
+         return result
+      }
+         /* 导出excel表格*/  
+        function exportCsv(obj){  
+             var title = obj.title;
+            var titleForKey = obj.titleForKey;
+            var data = obj.data;
+            var str = [];
+            str.push(obj.title.join(",")+"\n");
+            for(var i=0;i<data.length;i++){
+                var temp = [];
+                for(var j=0;j<titleForKey.length;j++){
+                    temp.push(data[i][titleForKey[j]]);
+             }
+             str.push(temp.join(",")+"\n");
+         }
+         return str.join("")
+      }
+       
+    </script>
+</body>
+
+</html>
